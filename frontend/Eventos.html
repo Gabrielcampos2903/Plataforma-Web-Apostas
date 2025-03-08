@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="login">
+
+    <div class="modal fade" id="BetModal">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fd-s" >Depositar</h1>
+                <button type="button" class="btn-close" 
+                data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Preencha todos os campos para fazer a bet</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="BetTitle" class="form-label">Nome do Evento</label>
+                        <input type="text" id="BetTitle" class="form-control" maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="BettingValue" class="form-label">Valor que deseja apostar</label>
+                        <input type="text"  id="BettingValue" class="form-control w-25">
+                    </div>
+                    <div class="mb-3">
+                        <label for="guess" class="form-label">Sua Guess</label>
+                        <input type="text"  id="guess" class="form-control w-25">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" 
+                data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="gettokenForBet()">Apostar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <header class="header" id="header">
+        <a href="HomePage.html" class="logo" id="logo">PaquetaBeting</a>
+        <nav class="navbar" id="navigationbar">
+            <a href="MainPage.html">Home</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <table id="EventsTable" class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center">Nome do evento</th>
+                            <th scope="col" class="text-center">Aposta Minima</th>
+                            <th scope="col" class="text-center">Data do Evento</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center">Completion</th>
+                            <th scope="col" class="text-center">Category</th>
+                            <th scope="col" class="text-center">Bet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <nav aria-label="..." style="float: right;">
+                    <ul id="ulPaginador" class="pagination pagination-sm">
+    
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+    <script>
+
+        var ulPaginator = document.getElementById("ulPaginador");
+        var EventsTable = document.getElementById("EventsTable");
+
+        let numPages = 0;
+        const Pagesize = 10;
+        var page = 1;
+       
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const category = getQueryParam('category');
+        console.log(category);
+        
+        function EventsCategory(){
+            const category = getQueryParam('category');
+
+            if(category){
+                requestEvents(page, category);
+            }
+            else{
+                alert('erro, sem categoria ativa');
+            }
+        }
+
+        async function requestNumberOfEvents() {
+            try{
+                
+                const h = new Headers();
+                h.append("Content-Type", "application/json");
+                h.append("category", category);
+
+                const resQtty = await fetch("http://100.93.233.91:3000/getEventsQtyy", {
+                method: "GET",
+                headers: h,
+            });
+
+                if(resQtty.ok){
+                    const qttyjson = await resQtty.json();
+                    const qtty = qttyjson[0].EVENTQTTY;
+                    console.log('Quantidade de eventos:', qtty);
+                    numPages = parseInt(qtty/Pagesize);
+                    console.log('Número de páginas:', numPages);
+                    if(qtty % Pagesize !== 0){
+                        numPages ++;
+                    }
+
+                    refreshPaginator();
+                }
+                else{
+                    alert('erro...');
+                }
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        function resetUlPageNumbers(){
+            while(ulPaginator.firstChild) 
+            ulPaginator.removeChild(ulPaginator.firstChild);
+        }
+
+        function refreshPaginator(){
+            resetUlPageNumbers();
+
+            let status = "";
+            let strLi = "";
+
+            for (let i = 1; i <= numPages; i++) {
+            (i === page) ? status = "page-item active" : status = "page-item";
+            strLi = `<li class="${status}"><a class="page-link" href="javascript:requestEvents(${i});">${i}</a></li>`;  
+            ulPaginator.innerHTML += strLi;
+            }
+        }
+
+        async function requestEvents(pagenumber, category) {
+            try{
+                page = pagenumber;
+
+                const h = new Headers();
+                h.append("Content-Type", "application/json");
+                h.append("page", pagenumber);
+                h.append("pageSize", Pagesize);
+                h.append("category", category);
+
+                const resEvents = await fetch("http://100.93.233.91:3000/getEventsByPage", {
+                    method: "POST",
+                    headers: h,
+                });
+
+                if(resEvents.ok){
+                    refreshPaginator();
+                    
+                    const EventData = await resEvents.json();
+                    console.log('Dados do evento recebidos:', EventData);
+                    fillTableWithEvents(EventData);
+                }
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        function fillTableWithEvents(events){
+            cleanTableRows();
+
+            events.forEach(element =>{
+                addEventRow(element);
+            });
+        }
+
+        function cleanTableRows(){
+            EventsTable.getElementsByTagName('tbody')[0].innerHTML = '';
+        }
+
+        function addEventRow(event){
+            let bet = parseFloat(event.VALORDABET);
+
+            const newEventrow = `
+                <tr id="${event.TITLE}">
+                    <td>${event.TITLE}</td>
+                    <td class="text-end">${event.VALORDABET}</td>
+                    <td class="text-center">${event.EVENTDATE}</td>
+                    <td class="text-center">${event.STATUS}</td>
+                    <td class="text-center">${event.COMPLETION}</td>
+                    <td class="text-center">${event.CATEGORIA}</td>
+                    <td class="text-center"> <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#BetModal" data-title="${event.TITLE}" onclick="setBetModalTitle('${event.TITLE}')">Bet!</button></td>
+                </tr>
+            `;
+            EventsTable.getElementsByTagName('tbody')[0].insertAdjacentHTML('beforeend', newEventrow);
+
+        }
+
+        function setBetModalTitle(title) {
+            const betTitleInput = document.getElementById("BetTitle");
+            betTitleInput.value = title;
+        }
+
+        function closeModalBetting(){
+            var modalBetting = document.getElementById('BetModal');
+            var modal = bootstrap.Modal.getInstance(modalBetting)
+            modal.hide();
+        }
+
+        async function gettokenForBet(){
+
+            try{
+                const email = localStorage.getItem("email");
+                const password = localStorage.getItem("password");
+                console.log(email);
+                console.log(password);
+
+                const h = new Headers();
+                h.append("Content-type", "application/json");
+                h.append("email", email);
+                h.append("password", password);
+
+                const resToken = await fetch("http://100.93.233.91:3000/GetToken", {
+                method: "GET",
+                headers: h,
+                });
+
+                if(resToken.ok){
+                    const foundtoken = await resToken.json();
+                    console.log(foundtoken);
+                    saveBet(foundtoken);
+                }
+                else{
+                    alert('erro')
+                }
+            }
+            catch(error){
+                console.error(error);
+            }
+
+        }
+
+        function saveBet(token){
+            const Ptitle = document.getElementById("BetTitle").value;
+            const Pbet = parseFloat(document.getElementById("BettingValue").value);
+            const Pguess = document.getElementById("guess").value;
+
+            if(Ptitle && Pbet && Pguess){
+                requestBet(Ptitle, Pbet, token, Pguess);
+            }
+            else{
+                alert('Informção não inserida');
+            }
+        }
+
+        async function requestBet(title, betvalue,token, guess) {
+            try{
+
+                const h = new Headers();
+                h.append("Content-Type", "application/json");
+                h.append('title', title);
+                h.append('bet', betvalue);
+                h.append('token', token);
+                h.append('guess', guess);
+                console.log(guess);
+
+                const resBet = await fetch("http://100.93.233.91:3000/BetOnevent", {
+                        method: "POST",
+                        headers: h,
+                    });
+
+                if (resBet.ok){
+                    alert('Aposta realizada com sucesso');
+                    closeModalBetting();
+                }
+                else{
+                    alert('erro ao realizar aposta')
+                }
+
+                
+            }
+            catch(error){
+                console.error(error);
+            }
+
+         }
+
+         document.addEventListener('DOMContentLoaded', function () {
+            requestNumberOfEvents();
+            EventsCategory();
+        });
+
+    </script>
+
+</body>
+</html>

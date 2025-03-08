@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+    <title> PaquetaBeting </title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    
+    
+</head>
+<body id="MainPage">
+    <div class="modal fade" id="BetModal">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fd-s" >Depositar</h1>
+                <button type="button" class="btn-close" 
+                data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Preencha todos os campos para fazer a bet</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="BetTitle" class="form-label">Nome do Evento</label>
+                        <input type="text" id="BetTitle" class="form-control" maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="BettingValue" class="form-label">Valor que deseja apostar</label>
+                        <input type="text"  id="BettingValue" class="form-control w-25">
+                    </div>
+                    <div class="mb-3">
+                        <label for="guess" class="form-label">Sua Guess</label>
+                        <input type="text"  id="guess" class="form-control w-25">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" 
+                data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="gettokenForBet()">Apostar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addNewEventModal" tabindex="-1" 
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Novo Evento</h1>
+                    <button type="button" class="btn-close" 
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Preencha todos os campos para cadastrar um Evento</p>
+                    <form>
+                        <div class="mb-3">
+                          <label for="EventName" class="form-label">Nome do evento</label>
+                          <input type="text" class="form-control" id="EventName" maxlength="50" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="EventSummary" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="EventSummary" maxlength="150" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="EventCategory" class="form-label">Categoria</label>
+                            <select class="form-control" id="EventCategory">
+                                <option value="" disabled selected>Selecione uma categoria</option>
+                                <option value="olimpiada">Olimpíada</option>
+                                <option value="catastrofes">Catástrofes</option>
+                                <option value="eleicoes">Eleições</option>
+                                <option value="bolsa-de-valores">Bolsa de Valores</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="valorDaBet" class="form-label">Valor minimo da aposta</label>
+                          <input type="text" class="form-control w-25" 
+                          id="valorDaBet" aria-describedby="valorDaBet">
+                          <div id="valorDaBetHelp" class="form-text">
+                            Valor minimo da cota R$1.00
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receveingbetdatebeg" class="form-label">Começo do recebimento de apostas</label>
+                            <input type="text" class="form-control" id="receveingbetdatebeg" >
+                            <div id="DataHelp" class="form-text">
+                                YYYY/MM/DD
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receveingbetdateend" class="form-label">Fim do recebimento de apostas</label>
+                            <input type="text" class="form-control" id="receveingbetdateend" >
+                            <div id="DataHelp" class="form-text">
+                                YYYY/MM/DD
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventdate" class="form-label">Dia do evento</label>
+                            <input type="text" class="form-control" id="eventdate" >
+                            <div id="DataHelp" class="form-text">
+                                YYYY/MM/DD
+                            </div>
+                        </div>
+                      </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                    data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="gettokenForEvent()">Salvar</button>
+                </div>
+            </div>
+            </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <header class="header2" id="header2">
+        <a href="HomePage.html" class="logo" id="logo">PaquetaBeting</a>
+        <nav class="navbar" id="navigationbar">
+            <a  role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Menu</a>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+              <div class="offcanvas-header" style="background-color: #03420e;">
+                <h5 class="offcanvas-title" id="offcanvasRightLabel" style="color: white;">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+                <div class="offcanvas-body" style="background-color: #191919;">
+                    <!--Fazer menu-->
+                    <a href="Wallet.html">-> Minha Wallet</a>
+                    <br>
+                    <br>
+                    <a href="HistoricoBets.html">-> Historico de apostas</a>
+                    
+                </div>
+              </div>
+              
+        </nav>
+    </header>
+
+    
+    
+    <div id="mainContent" class="container" style="padding-top: 30px;">
+        <div class="row mb-3">
+            <div class="col-lg-2 mb-2">
+                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addNewEventModal">
+                    <i class="fas fa-plus"></i> Novo
+                </button>
+            </div>
+            <div class="col-lg-10" >
+                <div class="input-group">
+                    <input type="text" class="form-control" id="EventTitle" placeholder="Search Event...">
+                    <button class="btn btn-success" type="button" onclick="Search()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="table-responsive">
+                    <table id="TableEvents" class="table table-dark table-striped table-hover rounded border">
+                        <thead >
+                            <tr>
+                                <th scope="col" class="text-start">Event Name</th>
+                                <th scope="col" class="text-end">Minimum Bet Value</th>
+                                <th scope="col" class="text-center">Event Date</th>
+                                <td scope="col" class="text-center">Status</td>
+                                <td scope="col" class="text-center">Completion</td>
+                                <td scope="col" class="text-center">Category</td>
+                                <td scope="col" class="text-center">Bet</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Eventos serão chamados aqui -->
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+        <hr style="color: white;">
+        <h2 style="color: white">Eventos proximos de vencer</h2>
+        <div class="table-responsive">
+            <table id="NearExperation" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Nome do evento</th>
+                        <th scope="col" class="text-center">Fim do recebimento de apostas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Serao adicionados aq-->
+                </tbody>
+            </table>
+        </div>
+
+
+        <hr style="color: white;">
+        <h2 style="color: white;">Eventos mais apostados</h2>
+        <div class="table-responsive">
+            <table id="topBettedEventsTable" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-start">Nome do Evento</th>
+                        <th scope="col" class="text-center">Total de Apostas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Eventos serao adicionados automaticamente aqui-->
+                </tbody>
+            </table>
+        </div>
+
+
+        <hr style="color: white;">
+        <h2 style="color: white;">Categorias</h2>
+
+
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-lg-3 mb-4">
+                    <a href="Eventos.html?category=olimpiada" class="text-decoration-none">
+                        <div class="card text-white bg-primary text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Olimpíada</h4>
+                                <p class="card-text">Eventos esportivos ao redor do mundo.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <a href="Eventos.html?category=catastrofes" class="text-decoration-none">
+                        <div class="card text-white bg-danger text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Catástrofes</h4>
+                                <p class="card-text">Eventos naturais e desastres em foco.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <a href="Eventos.html?category=eleicoes" class="text-decoration-none">
+                        <div class="card text-white bg-success text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Eleições</h4>
+                                <p class="card-text">Acompanhe os principais eventos políticos.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <a href="Eventos.html?category=bolsa-de-valores" class="text-decoration-none">
+                        <div class="card text-white bg-secondary text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Bolsa de Valores</h4>
+                                <p class="card-text">Análise de mercado e tendências financeiras.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+   <script>
+
+    var tableEvents = document.getElementById("TableEvents");
+    var tableEventsBetted = document.getElementById("topBettedEventsTable");
+    var tableNearExperation = document.getElementById("NearExperation");
+    
+    function closeModalBetting(){
+            var modalBetting = document.getElementById('BetModal');
+            var modal = bootstrap.Modal.getInstance(modalBetting)
+            modal.hide();
+        }
+
+        async function gettokenForBet(){
+
+            try{
+                const email = localStorage.getItem("email");
+                const password = localStorage.getItem("password");
+                console.log(email);
+                console.log(password);
+
+                const h = new Headers();
+                h.append("Content-type", "application/json");
+                h.append("email", email);
+                h.append("password", password);
+
+                const resToken = await fetch("http://100.93.233.91:3000/GetToken", {
+                method: "GET",
+                headers: h,
+                });
+
+                if(resToken.ok){
+                    const foundtoken = await resToken.json();
+                    console.log(foundtoken);
+                    saveBet(foundtoken);
+                }
+                else{
+                    alert('erro')
+                }
+            }
+            catch(error){
+                console.error(error);
+            }
+
+        }
+
+        function saveBet(token){
+            const Ptitle = document.getElementById("BetTitle").value;
+            const Pbet = parseFloat(document.getElementById("BettingValue").value);
+            const Pguess = document.getElementById("guess").value;
+
+            if(Ptitle && Pbet && Pguess){
+                requestBet(Ptitle, Pbet, token, Pguess);
+            }
+            else{
+                alert('Informção não inserida');
+            }
+        }
+
+        async function requestBet(title, betvalue,token, guess) {
+            try{
+
+                const h = new Headers();
+                h.append("Content-Type", "application/json");
+                h.append('title', title);
+                h.append('bet', betvalue);
+                h.append('token', token);
+                h.append('guess', guess);
+                console.log(guess);
+
+                const resBet = await fetch("http://100.93.233.91:3000/BetOnevent", {
+                        method: "POST",
+                        headers: h,
+                    });
+
+                if (resBet.ok){
+                    alert('Aposta realizada com sucesso');
+                    closeModalBetting();
+                }
+                else{
+                    alert('erro ao realizar aposta')
+                }
+
+                
+            }
+            catch(error){
+                console.error(error);
+            }
+
+         }
+
+
+    
+
+
+    function setBetModalTitle(title) {
+        const betTitleInput = document.getElementById("BetTitle");
+        betTitleInput.value = title;
+    }
+
+    function CompareDates(events){
+        const today = new Date();
+        const sortedEvents = events
+            .filter(event => new Date(event.DATERECEVEINGEND) > today) 
+            .sort((a, b) => new Date(a.DATERECEVEINGEND) - new Date(b.DATERECEVEINGEND)) 
+
+        const top5Events = sortedEvents.slice(0, 5);
+
+        fillTableNearExperation(top5Events);
+    }
+
+    function fillTableNearExperation(events){
+        CleanTableNearExperation();
+
+        events.forEach(event =>{
+            addNearExperationrow(event);
+        });
+    }
+
+    function addNearExperationrow(event){
+        const newNearExperationrow = `
+            <tr>
+                <td class="text-center">${event.TITLE}</td>
+                <td class="text-center">${new Date(event.DATERECEVEINGEND).toLocaleDateString()}</td>
+            </tr>
+        `
+        tableNearExperation.getElementsByTagName('tbody')[0].insertAdjacentHTML('beforeend', newNearExperationrow);
+    }
+
+    async function requestNearExperationEvents(){
+        try{
+            const resEvents = await fetch("http://100.93.233.91:3000/GetEventsDate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        });
+
+            if (resEvents.ok){
+                const eventDates = await resEvents.json();
+                console.log(eventDates);
+                CompareDates(eventDates);
+
+            }
+            else{
+                alert('erro.')
+            }
+
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
+    function fillTabbleWithBettedEvents(events) {
+        CleanTableEventsbettedRows(); 
+
+        events.forEach(event => {
+            addBettedEventRow(event); 
+        });
+    }
+
+    function addBettedEventRow(event) {
+        const newBettedEventRow = `
+            <tr id="${event.EVENT_TITLE}">
+                <td>${event.EVENT_TITLE}</td>
+                <td class="text-center">${event.TOTAL_APOSTAS}</td>
+            </tr>
+        `;
+        tableEventsBetted.getElementsByTagName('tbody')[0].insertAdjacentHTML('beforeend', newBettedEventRow);
+    }
+
+    async function TopBettedEvents() {
+        try{
+            const h = new Headers();
+            h.append("Content-Type", "application/json");
+
+            const SearchBettedEvents = await fetch("http://100.93.233.91:3000/TopBettedEvents", {
+                method: "POST",
+                headers: h,
+            });
+
+            if(SearchBettedEvents.ok){
+                const eventsBetted = await SearchBettedEvents.json();
+                console.log('Received Data:', eventsBetted);
+                fillTabbleWithBettedEvents(eventsBetted);
+            }
+            else{
+                alert('Erro...');
+            }
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
+    
+
+
+    function closeModalBetting(){
+        var modalBetting = document.getElementById('BetModal');
+        var modal = bootstrap.Modal.getInstance(modalBetting)
+        modal.hide();
+    }
+
+
+    function CleanTableEventsbettedRows(){
+        tableEventsBetted.getElementsByTagName('tbody')[0].innerHTML = '';
+
+    }
+
+    function CleanTableNearExperation(){
+        tableNearExperation.getElementsByTagName('tbody')[0].innerHTML = '';
+    }
+
+    function CleanTableRows(){
+        tableEvents.getElementsByTagName('tbody')[0].innerHTML = '';
+
+    }
+
+    function addEventRow(event){
+        const newEventRow= `
+            <tr id="${event.TITLE}">
+                <td>${event.TITLE}</td>
+                <td class="text-end">${event.VALORDABET}</td>
+                <td class="text-center">${event.EVENTDATE}</td>
+                <td class="text-center">${event.STATUS}</td>
+                <td class="text-center">${event.COMPLETION}</td>
+                <td class="text-center">${event.CATEGORIA}</td>
+                <td class="text-center"> <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#BetModal" data-title="${event.TITLE}" onclick="setBetModalTitle('${event.TITLE}')">Bet!</button></td>
+            </tr>
+        `;
+        tableEvents.getElementsByTagName('tbody')[0].insertAdjacentHTML('beforeend', newEventRow);
+    }
+    async function Search() {
+        var Ptitle = document.getElementById("EventTitle").value;
+
+        if (Ptitle){
+            requestSearchEvents(Ptitle);
+        }
+        else{
+            alert('Erro. Digite o nome do evento');
+        }
+    }
+
+    function fillTabbleWithEvents(events){
+        CleanTableRows();
+
+        events.forEach(element => {
+            addEventRow(element);
+        });
+    }
+    async function requestSearchEvents(eventName) {
+        try {
+
+            const h = new Headers();
+            h.append("Content-Type", "application/json");
+            h.append("title", eventName);
+
+            const resSearch = await fetch("http://100.93.233.91:3000/SearchEvent", {
+                method: "POST",
+                headers: h,
+            });
+
+            if (resSearch.ok){
+               
+
+                const EventData = await resSearch.json();
+
+                fillTabbleWithEvents(EventData);
+                console.log(EventData);
+            }
+            else{
+                alert('Erro, evento não existe');         
+            }
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
+    function closeModalAddEvent(){
+        var modalNewEvent = document.getElementById('addNewEventModal');
+        var modal = bootstrap.Modal.getInstance(modalNewEvent)
+        modal.hide();
+    }
+
+    async function gettokenForEvent(){
+
+        try{
+            const email = localStorage.getItem("email");
+            const password = localStorage.getItem("password");
+            console.log(email);
+            console.log(password);
+
+            const h = new Headers();
+            h.append("Content-type", "application/json");
+            h.append("email", email);
+            h.append("password", password);
+
+            const resToken = await fetch("http://100.93.233.91:3000/GetToken", {
+            method: "GET",
+            headers: h,
+            });
+
+            if(resToken.ok){
+                const foundtoken = await resToken.json();
+                console.log(foundtoken);
+                saveNewEvent(foundtoken);
+            }
+            else{
+                alert('erro')
+            }
+        }
+        catch(error){
+            console.error(error);
+        }
+
+    }
+
+    async function saveNewEvent(token){
+        var PeventName = document.getElementById("EventName").value;
+        var Psummary = document.getElementById("EventSummary").value;
+        var PvalorDaBet = parseFloat(document.getElementById("valorDaBet").value);
+        var Preceveingbetdatebeg = document.getElementById("receveingbetdatebeg").value;
+        var Preceveingbetdateend = document.getElementById("receveingbetdateend").value;
+        var Peventdate = document.getElementById("eventdate").value;
+        var Pcategory = document.getElementById("EventCategory").value;
+        
+
+        if (Psummary && PeventName && PvalorDaBet && Preceveingbetdatebeg && Preceveingbetdateend && Peventdate && Pcategory) {
+            if (PvalorDaBet >= 1) {
+                requestNewEvent(PeventName, Psummary, PvalorDaBet, Preceveingbetdatebeg, Preceveingbetdateend, Peventdate, Pcategory, token);
+            } 
+            else {
+                    alert('Valor da bet deve ser no minimo R$1.00');
+            }
+        }           
+            else {
+                alert('Algum dado faltando...');
+            }
+
+    }
+
+    async function requestNewEvent(eventName, summary, betvalue, betdatebeg, betdateend, eventdate,category, token ){
+        try{
+
+            const h = new Headers();
+            h.append("Content-Type", "application/json");
+            h.append("eventName", eventName);
+            h.append("summary", summary);
+            h.append("betvalue", betvalue);
+            h.append("betdatebeg", betdatebeg);
+            h.append("betdateend", betdateend);
+            h.append("eventdate", eventdate);
+            h.append("token", token);
+            h.append("categoria", category);
+
+           
+
+            const resNewEvent = await fetch("http://100.93.233.91:3000/CreateNewEvent", {
+                method: "POST",
+                headers: h,
+            });
+
+            
+            
+            if(resNewEvent.ok){
+                closeModalAddEvent();
+                alert('Evento adicionado!');
+            }
+            else{
+                alert('Erro, evento ja existente/datas invalidas...');
+            }
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        TopBettedEvents();
+        requestNearExperationEvents();
+    });
+
+
+   </script>
+   
+</body>
+</html>

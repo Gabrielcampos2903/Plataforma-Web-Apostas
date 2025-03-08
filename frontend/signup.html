@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <title>Sign up</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+
+</head>
+
+<body id="login">
+
+    <header class="header" id="header">
+        <a href="HomePage.html" class="logo" id="logo">PaquetaBeting</a>
+        <nav class="navbar" id="navigationbar">
+            <a href="login.html">Login</a>
+            <a href="HomePage.html">Home</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <div id="wrapper">
+        <form action="">
+            <h1>Sign Up</h1>
+            <div id="input-box">
+                <label for="Accusername">Username</label>
+                <input type="text" id="Accusername">
+            </div>
+            <div id="input-box">
+                <label for="Accemail">Email</label>
+                <input type="text"  id="Accemail">
+            </div>
+            <div id="input-box">
+                <label for="AccPassword">Password</label>
+                <input type="text" id="AccPassword">
+            </div>
+            <div id="input-box">
+                <label for="AccBirthDate">BirthDate</label>
+                <input type="text" id="AccBirthDate">
+            </div>
+            <button type="button" id="btn" onclick="SaveSignUp()">Sign Up</button>
+        </form>
+    </div>
+
+    <script>
+
+        async function SaveSignUp() {
+            var Pusername = document.getElementById("Accusername").value;
+            var Pemail = document.getElementById("Accemail").value;
+            var PPAssword = document.getElementById("AccPassword").value;
+            var Pbirthdate = document.getElementById("AccBirthDate").value;
+
+            Pusername = Pusername.trim();
+            Pemail = Pemail.trim();
+            PPAssword = PPAssword.trim();
+            Pbirthdate = Pbirthdate.trim();
+
+            if (PPAssword && Pbirthdate && Pusername && Pemail){
+                await requestSignUp(Pusername, Pemail, PPAssword, Pbirthdate);
+            }
+            else{
+                alert('Algum dado esta faltando...');
+            }
+        }
+
+
+
+        async function requestSignUp(username, email, Password, BirthDate) {
+            try{
+                const h = new Headers();
+                h.append("Content-type", "application/json");
+                h.append("username", username);
+                h.append("email",email);
+                h.append("Password" , Password);
+                h.append("BirthDate", BirthDate);
+                
+
+                const resSignUp = await fetch("http://100.93.233.91:3000/signUp", {
+                    method: "PUT",
+                    headers: h,
+                });
+
+                if(resSignUp.ok){
+                    window.location.href = "login.html";
+                }
+                else{
+                    alert('Conta com esse email ja existente. Ou data invalida...');
+                }
+
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+
+
+    </script>
+
+
+
+</body>
+</html>
